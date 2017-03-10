@@ -28,13 +28,12 @@ android {
     }
     externalNativeBuild {
         cmake {
-            path 'src/main/cpp/CMakeLists.txt'
+            path 'CMakeLists.txt'
         }
     }
     sourceSets {
         main {
-            jniLibs.srcDirs = ['../distribution/opencv/libs',
-                               '../distribution/mathlib/add/lib']
+            jniLibs.srcDirs = ['../distribution/libs']
         }
     }
 }
