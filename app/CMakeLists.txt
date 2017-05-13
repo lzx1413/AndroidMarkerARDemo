@@ -58,19 +58,15 @@ add_library(lib_opencv_java3 SHARED IMPORTED)
 set_target_properties(lib_opencv_java3 PROPERTIES
                       IMPORTED_LOCATION ${distribution_DIR}/libs/${ANDROID_ABI}/libopencv_java3.so)
 include_directories(${distribution_DIR}/include)
-
-
-add_library(native-math SHARED
-            src/main/cpp/native-math.cpp)
-set_target_properties(native-math PROPERTIES
-                      LIBRARY_OUTPUT_DIRECTORY ${distribution_DIR}/libs/${ANDROID_ABI})
-target_link_libraries(native-math
-                      android
-                      lib_add
-                      log)
-
+include_directories(src/main/cpp/)
 add_library(native-opencv SHARED
-            src/main/cpp/native-opencv.cpp)
+            src/main/cpp/MarkerDetector.cpp
+            src/main/cpp/native-opencv.cpp
+            src/main/cpp/GeometryTypes.cpp
+            src/main/cpp/Marker.cpp
+            src/main/cpp/TinyLA.cpp
+            src/main/cpp/CameraCalibration.cpp
+            )
 set_target_properties(native-opencv PROPERTIES
                       LIBRARY_OUTPUT_DIRECTORY ${distribution_DIR}/libs/${ANDROID_ABI})
 target_link_libraries(native-opencv
