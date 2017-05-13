@@ -20,35 +20,19 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     }
     private native int addFromCpp(int a, int b);
     private native void nativeProcessFrame(long addrGray, long addrRGBA);
-    private native void initCaffe2(AssetManager mgr);
-    public native String classificationFromCaffe2(long addrGray,long addrRGBA);
     private AssetManager mgr;
-    private String predictedClass = "none";
 
     private static final String TAG = "MainActivity";
 
     private Mat rgba;
     private Mat gray;
     private CameraBridgeViewBase mOpenCvCameraView;
-    private class SetUpNeuralNetwork extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void[] v) {
-            try {
-                initCaffe2(mgr);
-                predictedClass = "Neural net loaded! Inferring...";
-            } catch (Exception e) {
-                Log.d(TAG, "Couldn't load neural network.");
-            }
-            return null;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mgr = getResources().getAssets();
 
-        new SetUpNeuralNetwork().execute();
         setContentView(R.layout.activity_main);
         TextView tv = (TextView) findViewById(R.id.mainactivity_text_view);
         tv.setText("" + addFromCpp(3,5));
@@ -100,7 +84,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         rgba = inputFrame.rgba();
         gray = inputFrame.gray();
         nativeProcessFrame(gray.getNativeObjAddr(), rgba.getNativeObjAddr());
-        classificationFromCaffe2(gray.getNativeObjAddr(),rgba.getNativeObjAddr());
         return rgba;
     }
 }
