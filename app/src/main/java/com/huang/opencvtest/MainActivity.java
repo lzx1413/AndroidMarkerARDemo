@@ -5,7 +5,13 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.opencv.android.CameraBridgeViewBase;
@@ -13,77 +19,51 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
-public class MainActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2{
+public class MainActivity extends Activity
+{
+    private CameraPreview camPreview;
+    private ImageView MyCameraPreview = null;
+    private FrameLayout mainLayout;
+    private int PreviewSizeWidth = 800;
+    private int PreviewSizeHeight= 480;
     static {
         System.loadLibrary("native-opencv");
-        System.loadLibrary("native-math");
-    }
-    private native int addFromCpp(int a, int b);
-    private native void nativeProcessFrame(long addrGray, long addrRGBA);
-    private AssetManager mgr;
-
-    private static final String TAG = "MainActivity";
-
-    private Mat rgba;
-    private Mat gray;
-    private CameraBridgeViewBase mOpenCvCameraView;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mgr = getResources().getAssets();
-
-        setContentView(R.layout.activity_main);
-        TextView tv = (TextView) findViewById(R.id.mainactivity_text_view);
-        tv.setText("" + addFromCpp(3,5));
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_camera_view);
-        mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(this);
+        //System.loadLibrary("native-math");
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        if (mOpenCvCameraView != null){
-            mOpenCvCameraView.disableView();
-        }
-    }
-
-    @Override
-    public void onResume()
+    public void onCreate(Bundle savedInstanceState)
     {
-        super.onResume();
-        if (!OpenCVLoader.initDebug()) {
-            Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-        } else {
-            Log.d(TAG, "OpenCV library found inside package. Using it!");
-            mOpenCvCameraView.enableView();
-        }
-    }
+        super.onCreate(savedInstanceState);
+        //Set this APK Full screen
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+               WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //Set this APK no title
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_main);
 
-    public void onDestroy() {
-        super.onDestroy();
-        if (mOpenCvCameraView != null){
-            mOpenCvCameraView.disableView();
-        }
-    }
+        //
+        // Create my camera preview
+        //
+        MyCameraPreview = new ImageView(this);
 
-    public void onCameraViewStarted(int width, int height){
-        rgba = new Mat(height, width, CvType.CV_8UC4);
-        gray = new Mat(height, width, CvType.CV_8UC1);
-    }
+        SurfaceView camView = new SurfaceView(this);
+        camView.setVisibility(View.VISIBLE);
+        SurfaceHolder camHolder = camView.getHolder();
+        camPreview = new CameraPreview(PreviewSizeWidth, PreviewSizeHeight, MyCameraPreview);
 
-    public void onCameraViewStopped() {
-        rgba.release();
-        gray.release();
-    }
+        camHolder.addCallback(camPreview);
+        camHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
-        rgba = inputFrame.rgba();
-        gray = inputFrame.gray();
-        nativeProcessFrame(gray.getNativeObjAddr(), rgba.getNativeObjAddr());
-        return rgba;
+
+        mainLayout = (FrameLayout) findViewById(R.id.frameLayout1);
+        mainLayout.addView(camView, new WindowManager.LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
+        mainLayout.addView(MyCameraPreview, new WindowManager.LayoutParams(PreviewSizeWidth, PreviewSizeHeight));
+    }
+    protected void onPause()
+    {
+        if ( camPreview != null)
+            camPreview.onPause();
+        super.onPause();
     }
 }

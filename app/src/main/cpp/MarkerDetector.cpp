@@ -24,7 +24,7 @@ std::auto_ptr<MarkerDetectionFacade> createMarkerDetection(CameraCalibration cal
 {
   return std::auto_ptr<MarkerDetectionFacade>(new MarkerDetector(calibration));
 }
-
+MarkerDetector::MarkerDetector() {}
 MarkerDetector::MarkerDetector(CameraCalibration calibration)
 : m_minContourLengthAllowed(100)
 , markerSize(100,100)
