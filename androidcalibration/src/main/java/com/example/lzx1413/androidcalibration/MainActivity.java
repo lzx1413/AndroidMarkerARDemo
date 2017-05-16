@@ -170,6 +170,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
                         new OnCameraFrameRender(new ComparisonFrameRender(mCalibrator, mWidth, mHeight, getResources()));
                 item.setChecked(true);
                 return true;
+            case R.id.AR:
+                mOnCameraFrameRender = new OnCameraFrameRender(new ARFramRender(mCalibrator,mWidth,mHeight,getResources()));
+                item.setChecked(true);
+                return true;
             case R.id.calibrate:
                 final Resources res = getResources();
                 if (mCalibrator.getCornersBufferSize() < 2) {

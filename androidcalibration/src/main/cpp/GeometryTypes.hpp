@@ -37,6 +37,10 @@ struct Matrix33
   static Matrix33 identity();
   Matrix33 getTransposed() const;
 };
+struct Vector5
+{
+    float data[5];
+};
 
 struct Vector4
 {

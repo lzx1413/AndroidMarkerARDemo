@@ -15,6 +15,8 @@
                         android:title="@string/undistortion" />
                     <item android:id="@+id/comparison"
                         android:title="@string/comparison" />
+                    <item android:id="@+id/AR"
+                        android:title="AR" />
                 </group>
             </menu>
         </item>

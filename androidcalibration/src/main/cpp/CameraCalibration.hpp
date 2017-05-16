@@ -30,11 +30,11 @@ public:
   void getMatrix34(float cparam[3][4]) const;
 
   const Matrix33& getIntrinsic() const;
-  const Vector4&  getDistorsion() const;
+  const Vector5&  getDistorsion() const;
   
 private:
   Matrix33 m_intrinsic;
-  Vector4  m_distorsion;
+  Vector5  m_distorsion;
 };
 
 #endif

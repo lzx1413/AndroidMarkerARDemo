@@ -41,14 +41,17 @@ public:
    * @calibration[in] - Camera calibration (intrinsic and distorsion components) necessary for pose estimation.
    */
   MarkerDetector(CameraCalibration calibration);
-  MarkerDetector();
+    MarkerDetector();
+  MarkerDetector(const cv::Mat& cameraMatrix,const cv::Mat& disCoeff);
   void processFrame(const BGRAVideoFrame& frame);
+    void  resetMatrix(const cv::Mat& cameraMatrix,const cv::Mat& disCoeff);
   
   
   const std::vector<Transformation>& getTransformations() const;
   
 //protected:
   bool findMarkers(const BGRAVideoFrame& frame, std::vector<Marker>& detectedMarkers);
+    bool findMarkers(const cv::Mat &grayimage, std::vector<Marker>& detectedMarkers);
 
   void prepareImage(const cv::Mat& bgraMat, cv::Mat& grayscale);//this function is not needed because we can get the grey image from camera directly
   void performThreshold(const cv::Mat& grayscale, cv::Mat& thresholdImg);

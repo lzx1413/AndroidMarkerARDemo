@@ -24,7 +24,60 @@ std::auto_ptr<MarkerDetectionFacade> createMarkerDetection(CameraCalibration cal
 {
   return std::auto_ptr<MarkerDetectionFacade>(new MarkerDetector(calibration));
 }
-MarkerDetector::MarkerDetector() {}
+MarkerDetector::MarkerDetector() {
+
+    bool centerOrigin = true;
+    if (centerOrigin)
+    {
+        m_markerCorners3d.push_back(cv::Point3f(-0.5f,-0.5f,0));
+        m_markerCorners3d.push_back(cv::Point3f(+0.5f,-0.5f,0));
+        m_markerCorners3d.push_back(cv::Point3f(+0.5f,+0.5f,0));
+        m_markerCorners3d.push_back(cv::Point3f(-0.5f,+0.5f,0));
+    }
+    else
+    {
+        m_markerCorners3d.push_back(cv::Point3f(0,0,0));
+        m_markerCorners3d.push_back(cv::Point3f(1,0,0));
+        m_markerCorners3d.push_back(cv::Point3f(1,1,0));
+        m_markerCorners3d.push_back(cv::Point3f(0,1,0));
+    }
+
+    m_markerCorners2d.push_back(cv::Point2f(0,0));
+    m_markerCorners2d.push_back(cv::Point2f(markerSize.width-1,0));
+    m_markerCorners2d.push_back(cv::Point2f(markerSize.width-1,markerSize.height-1));
+    m_markerCorners2d.push_back(cv::Point2f(0,markerSize.height-1));
+}
+void MarkerDetector::resetMatrix(const cv::Mat &cameraMatrix, const cv::Mat &discoeff) {
+
+    cameraMatrix.copyTo(camMatrix);
+    discoeff.copyTo(distCoeff);
+
+}
+MarkerDetector::MarkerDetector(const cv::Mat& cameraMatrix,const cv::Mat& distcoeff) {
+
+  cameraMatrix.copyTo(camMatrix);
+  distcoeff.copyTo(distCoeff);
+  bool centerOrigin = true;
+  if (centerOrigin)
+  {
+    m_markerCorners3d.push_back(cv::Point3f(-0.5f,-0.5f,0));
+    m_markerCorners3d.push_back(cv::Point3f(+0.5f,-0.5f,0));
+    m_markerCorners3d.push_back(cv::Point3f(+0.5f,+0.5f,0));
+    m_markerCorners3d.push_back(cv::Point3f(-0.5f,+0.5f,0));
+  }
+  else
+  {
+    m_markerCorners3d.push_back(cv::Point3f(0,0,0));
+    m_markerCorners3d.push_back(cv::Point3f(1,0,0));
+    m_markerCorners3d.push_back(cv::Point3f(1,1,0));
+    m_markerCorners3d.push_back(cv::Point3f(0,1,0));
+  }
+
+  m_markerCorners2d.push_back(cv::Point2f(0,0));
+  m_markerCorners2d.push_back(cv::Point2f(markerSize.width-1,0));
+  m_markerCorners2d.push_back(cv::Point2f(markerSize.width-1,markerSize.height-1));
+  m_markerCorners2d.push_back(cv::Point2f(0,markerSize.height-1));
+}
 MarkerDetector::MarkerDetector(CameraCalibration calibration)
 : m_minContourLengthAllowed(100)
 , markerSize(100,100)
@@ -69,6 +122,35 @@ void MarkerDetector::processFrame(const BGRAVideoFrame& frame)
 const std::vector<Transformation>& MarkerDetector::getTransformations() const
 {
   return m_transformations;
+}
+bool MarkerDetector::findMarkers(const cv::Mat& grayimage, std::vector<Marker>& detectedMarkers)
+{
+    m_grayscaleImage = grayimage;
+
+    // Make it binary
+    performThreshold(m_grayscaleImage, m_thresholdImg);
+
+    // Detect contours
+    findContours(m_thresholdImg, m_contours, m_grayscaleImage.cols / 5);
+    if (m_contours.size() == 0)
+        return false;
+
+    // Find closed contours that can be approximated with 4 points
+    findMarkerCandidates(m_contours, detectedMarkers);
+    if (detectedMarkers.size() == 0)
+        return false;
+
+    // Find is them are markers
+    detectMarkers(m_grayscaleImage, detectedMarkers);
+    if (detectedMarkers.size() == 0)
+        return false;
+
+    // Calcualte their poses
+    estimatePosition(detectedMarkers);
+
+    //sort by id
+    std::sort(detectedMarkers.begin(), detectedMarkers.end());
+    return true;
 }
 
 

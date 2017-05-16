@@ -16,13 +16,14 @@ import org.opencv.core.Range;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import android.content.res.Resources;
+import android.util.Log;
 
 abstract class FrameRender {
     protected CameraCalibrator mCalibrator;
+    protected static final String TAG = "CameraFrameRender";
 
     public abstract Mat render(CvCameraViewFrame inputFrame);
 }
-
 class PreviewFrameRender extends FrameRender {
     @Override
     public Mat render(CvCameraViewFrame inputFrame) {
@@ -94,10 +95,35 @@ class ComparisonFrameRender extends FrameRender {
     }
 }
 class ARFramRender extends FrameRender{
+    static
+    {
+        System.loadLibrary("native-opencv");
+    }
+    private int mWidth;
+    private int mHeight;
+    private Resources mResources;
+    public native boolean initMarkerDetector(long camMat,long distorCoef);
+    public native void  findMarkers(long grayaddr);
+    public ARFramRender (CameraCalibrator calibrator,int width, int height,Resources resources)
+    {
+        mCalibrator = calibrator;
+        mWidth = width;
+        mHeight = height;
+        mResources = resources;
+        Mat camMat = mCalibrator.getCameraMatrix();
+        Mat distortion = mCalibrator.getDistortionCoefficients();
+        if(!initMarkerDetector(camMat.getNativeObjAddr(),distortion.getNativeObjAddr()))
+        {
+            Log.e(TAG,"init marker detector failed");
+        }
+
+
+    }
     @Override
     public Mat render(CvCameraViewFrame inputFrame){
         Mat rgbaFrame = inputFrame.rgba();
         Mat grayFrame = inputFrame.gray();
+         findMarkers(grayFrame.getNativeObjAddr());
         return rgbaFrame;
 
     }

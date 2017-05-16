@@ -63,7 +63,7 @@ const Matrix33& CameraCalibration::getIntrinsic() const
   return m_intrinsic;
 }
 
-const Vector4&  CameraCalibration::getDistorsion() const
+const Vector5&  CameraCalibration::getDistorsion() const
 {
   return m_distorsion;
 }
