@@ -11,10 +11,12 @@
 #include <android/log.h>
 #include <MarkerDetector.hpp>
 #include <Marker.hpp>
+#include <ARDisplay.h>
 
 #define alog(...) __android_log_print(ANDROID_LOG_ERROR, "F8DEMO", __VA_ARGS__);
 static MarkerDetector marker_detector;
 static std::vector<Marker> detecedMarkers;
+static ARDisplay arDisplay;
 using namespace cv;
 using namespace std;
 
@@ -22,10 +24,23 @@ using namespace std;
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_lzx1413_androidcalibration_ARFramRender_findMarkers(JNIEnv *env, jobject instance,
-                                                                     jlong grayaddr) {
+                                                                     jlong grayaddr,jlong rgbaaddr) {
     detecedMarkers.clear();
     Mat grayImg = *(Mat*) grayaddr;
+    Mat rgbaImg = *(Mat*) rgbaaddr;
+    if(marker_detector.findMarkers(grayImg,detecedMarkers))
+    {
+        alog("find markers");
+        for(auto marker : detecedMarkers) {
+            for (auto point :marker.points) {
+                circle(rgbaImg, point, 10, Scalar(255, 0, 0, 255));
 
+            }
+            cv::Mat outterMatrix = marker.transformation.getMat34();
+            cv::Mat camMatrix = marker_detector.get_camMatrix();
+            arDisplay.PlotCube(rgbaImg, outterMatrix, camMatrix);
+        }
+    }
 }
 
 extern "C"

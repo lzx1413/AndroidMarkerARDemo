@@ -66,6 +66,7 @@ add_library(native-opencv SHARED
             src/main/cpp/Marker.cpp
             src/main/cpp/TinyLA.cpp
             src/main/cpp/CameraCalibration.cpp
+            src/main/cpp/ARDisplay.cpp
             )
 set_target_properties(native-opencv PROPERTIES
                       LIBRARY_OUTPUT_DIRECTORY ${distribution_DIR}/libs/${ANDROID_ABI})

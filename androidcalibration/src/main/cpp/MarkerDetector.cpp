@@ -19,12 +19,22 @@
 #include "MarkerDetector.hpp"
 #include "Marker.hpp"
 #include "TinyLA.hpp"
+#include <android/log.h>
 
+#define LOG "markerdector"
+#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG,__VA_ARGS__) // 定义LOGD类型
+#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG,__VA_ARGS__) // 定义LOGD类型
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG,__VA_ARGS__) // 定义LOGI类型
+#define LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG,__VA_ARGS__) // 定义LOGW类型
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG,__VA_ARGS__) // 定义LOGE类型
+#define LOGF(...)  __android_log_print(ANDROID_LOG_FATAL,LOG,__VA_ARGS__) // 定义LOGF类型
 std::auto_ptr<MarkerDetectionFacade> createMarkerDetection(CameraCalibration calibration)
 {
   return std::auto_ptr<MarkerDetectionFacade>(new MarkerDetector(calibration));
 }
-MarkerDetector::MarkerDetector() {
+MarkerDetector::MarkerDetector()
+  : m_minContourLengthAllowed(100)
+          , markerSize(100,100){
 
     bool centerOrigin = true;
     if (centerOrigin)
@@ -49,15 +59,21 @@ MarkerDetector::MarkerDetector() {
 }
 void MarkerDetector::resetMatrix(const cv::Mat &cameraMatrix, const cv::Mat &discoeff) {
 
-    cameraMatrix.copyTo(camMatrix);
-    discoeff.copyTo(distCoeff);
+    camMatrix = cv::Mat(3,3,CV_32FC1);
+    cameraMatrix.convertTo(camMatrix,CV_32FC1);
+    distCoeff = cv::Mat(5,1,CV_32FC1);
+    discoeff.convertTo(distCoeff,CV_32FC1);
+    //cameraMatrix.copyTo(camMatrix);
+    //discoeff.copyTo(distCoeff);
 
 }
-MarkerDetector::MarkerDetector(const cv::Mat& cameraMatrix,const cv::Mat& distcoeff) {
+MarkerDetector::MarkerDetector(const cv::Mat& cameraMatrix,const cv::Mat& distcoeff)
+    : m_minContourLengthAllowed(100)
+            , markerSize(100,100){
 
   cameraMatrix.copyTo(camMatrix);
   distcoeff.copyTo(distCoeff);
-  bool centerOrigin = true;
+  bool centerOrigin = false;
   if (centerOrigin)
   {
     m_markerCorners3d.push_back(cv::Point3f(-0.5f,-0.5f,0));
@@ -132,16 +148,19 @@ bool MarkerDetector::findMarkers(const cv::Mat& grayimage, std::vector<Marker>& 
 
     // Detect contours
     findContours(m_thresholdImg, m_contours, m_grayscaleImage.cols / 5);
+    LOGD("contours size is %d",m_contours.size());
     if (m_contours.size() == 0)
         return false;
 
     // Find closed contours that can be approximated with 4 points
     findMarkerCandidates(m_contours, detectedMarkers);
+    LOGD("candidated size is %d",detectedMarkers.size());
     if (detectedMarkers.size() == 0)
         return false;
 
     // Find is them are markers
     detectMarkers(m_grayscaleImage, detectedMarkers);
+    LOGD("markers size is %d",detectedMarkers.size());
     if (detectedMarkers.size() == 0)
         return false;
 
@@ -348,6 +367,7 @@ void MarkerDetector::detectMarkers(const cv::Mat& grayscale, std::vector<Marker>
   
     // Transform image to get a canonical marker image
     cv::warpPerspective(grayscale, canonicalMarker,  M, markerSize);
+      cv::imwrite("/sdcard/canonicalMarker.png",grayscale);
         
     int nRotations;
     int id = Marker::getMarkerId(canonicalMarker,nRotations);
@@ -423,7 +443,7 @@ void MarkerDetector::estimatePosition(std::vector<Marker>& detectedMarkers)
     }
     
     // Since solvePnP finds camera location, w.r.t to marker pose, to get marker pose w.r.t to the camera we invert it.
-    m.transformation = m.transformation.getInverted();
+    //m.transformation = m.transformation.getInverted();
   }
 }
 

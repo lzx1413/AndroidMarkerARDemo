@@ -13,6 +13,8 @@
 #ifndef Example_MarkerBasedAR_GeometryTypes_hpp
 #define Example_MarkerBasedAR_GeometryTypes_hpp
 
+#include <opencv2/core/mat.hpp>
+
 struct Matrix44
 {
   union
@@ -67,6 +69,7 @@ struct Transformation
   const Vector3&  t() const;
   
   Matrix44 getMat44() const;
+    cv::Mat getMat34()const;
   
   Transformation getInverted() const;
 private:

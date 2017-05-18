@@ -87,7 +87,7 @@ int Marker::mat2id(const cv::Mat &bits)
 
 int Marker::getMarkerId(cv::Mat &markerImage,int &nRotations)
 {
-  assert(markerImage.rows == markerImage.cols);
+ // assert(markerImage.rows == markerImage.cols);
   assert(markerImage.type() == CV_8UC1);
   
   cv::Mat grey = markerImage;

@@ -119,7 +119,21 @@ const Vector3&  Transformation::t() const
 {
   return  m_translation;
 }
+cv::Mat Transformation::getMat34() const {
+  cv::Mat Mat34 = cv::Mat(3,4,CV_32FC1);
+  for (int col=0;col<3;col++)
+  {
+    for (int row=0;row<3;row++)
+    {
+      // Copy rotation component
+      Mat34.at<float>(row,col) = m_rotation.mat[row][col];
+      // Copy translation component
+      Mat34.at<float>(row,3) = m_translation.data[row];
+    }
 
+  }
+  return Mat34;
+}
 Matrix44 Transformation::getMat44() const
 {
   Matrix44 res = Matrix44::identity();

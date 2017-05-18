@@ -103,7 +103,7 @@ class ARFramRender extends FrameRender{
     private int mHeight;
     private Resources mResources;
     public native boolean initMarkerDetector(long camMat,long distorCoef);
-    public native void  findMarkers(long grayaddr);
+    public native void  findMarkers(long grayaddr,long rgbaaddr);
     public ARFramRender (CameraCalibrator calibrator,int width, int height,Resources resources)
     {
         mCalibrator = calibrator;
@@ -123,7 +123,7 @@ class ARFramRender extends FrameRender{
     public Mat render(CvCameraViewFrame inputFrame){
         Mat rgbaFrame = inputFrame.rgba();
         Mat grayFrame = inputFrame.gray();
-         findMarkers(grayFrame.getNativeObjAddr());
+         findMarkers(grayFrame.getNativeObjAddr(),rgbaFrame.getNativeObjAddr());
         return rgbaFrame;
 
     }

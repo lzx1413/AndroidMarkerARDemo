@@ -59,6 +59,10 @@ public:
   void findMarkerCandidates(const std::vector<std::vector<cv::Point> >& contours, std::vector<Marker>& detectedMarkers);
   void detectMarkers(const cv::Mat& grayscale, std::vector<Marker>& detectedMarkers);
   void estimatePosition(std::vector<Marker>& detectedMarkers);
+    cv::Mat get_camMatrix()
+    {
+      return camMatrix;
+    }
 
 private:
   float m_minContourLengthAllowed;
