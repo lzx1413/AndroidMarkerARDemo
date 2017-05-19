@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AndroidCalibration</string>
+    <string name="app_name">AndroidMarkerARDemo</string>
     <string name="start_btn">start</string>>
     <string name="catch_btn">catch</string>>
     <string name="action_calibrate">Calibrate</string>
