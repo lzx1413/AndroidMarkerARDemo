@@ -4,6 +4,10 @@
         <item android:id="@+id/calibrate"
             android:title="@string/action_calibrate"
             android:showAsAction="ifRoom|withText" />
+        <item android:id="@+id/show_camera"
+            android:title="ShowCameraInfo"
+        android:showAsAction="ifRoom|withText" />
+
         <item android:id="@+id/preview_mode"
             android:title="@string/preview_mode">
             <menu>

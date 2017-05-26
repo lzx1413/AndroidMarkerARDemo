@@ -1,7 +1,7 @@
 package com.example.lzx1413.androidcalibration;
 
 /**
- * Created by fotoable on 2017/5/15.
+ * Created by lzx1413 on 2017/5/15.
  */
 
 import java.util.ArrayList;
