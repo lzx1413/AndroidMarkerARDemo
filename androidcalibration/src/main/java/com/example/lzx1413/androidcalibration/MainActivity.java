@@ -1,31 +1,4 @@
 package com.example.lzx1413.androidcalibration;
-
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.core.Mat;
-import android.app.Activity;
-        import android.content.res.AssetManager;
-        import android.os.AsyncTask;
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.view.SurfaceHolder;
-        import android.view.SurfaceView;
-        import android.view.View;
-        import android.view.Window;
-        import android.view.WindowManager;
-        import android.widget.FrameLayout;
-        import android.widget.ImageView;
-        import android.widget.TextView;
-
-        import org.opencv.android.CameraBridgeViewBase;
-        import org.opencv.android.OpenCVLoader;
-        import org.opencv.core.CvType;
-        import org.opencv.core.Mat;
 // This sample is based on "Camera calibration With OpenCV" tutorial:
 // http://docs.opencv.org/doc/tutorials/calib3d/camera_calibration/camera_calibration.html
 //
@@ -39,29 +12,27 @@ import android.app.Activity;
 // When you've captured necessary amount of pattern corners (usually ~20 are enough),
 // press "Calibrate" button for performing camera calibration.
 
-
-        import org.opencv.android.BaseLoaderCallback;
-        import org.opencv.android.CameraBridgeViewBase;
-        import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-        import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
-        import org.opencv.android.LoaderCallbackInterface;
-        import org.opencv.android.OpenCVLoader;
-        import org.opencv.core.Mat;
-
-        import android.app.Activity;
-        import android.app.ProgressDialog;
-        import android.content.res.Resources;
-        import android.os.AsyncTask;
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.view.Menu;
-        import android.view.MenuItem;
-        import android.view.MotionEvent;
-        import android.view.SurfaceView;
-        import android.view.View;
-        import android.view.View.OnTouchListener;
-        import android.view.WindowManager;
-        import android.widget.Toast;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.core.Mat;
+import android.app.Activity;
+import android.os.AsyncTask;
+import android.view.SurfaceView;
+import android.view.WindowManager;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
+import org.opencv.android.LoaderCallbackInterface;
+import android.app.ProgressDialog;
+import android.content.res.Resources;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View.OnTouchListener;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
     private static final String TAG = "OCVSample::Activity";
@@ -69,6 +40,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     private CameraBridgeViewBase mOpenCvCameraView;
     private CameraCalibrator mCalibrator;
     private OnCameraFrameRender mOnCameraFrameRender;
+    private TextView info_txt;
+    private boolean flag_info_txt = false;
     private int mWidth;
     private int mHeight;
 
@@ -105,6 +78,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_calibration_java_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        info_txt = (TextView) findViewById(R.id.info_text);
+        info_txt.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -155,6 +130,21 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.show_camera:
+                if (mCalibrator.isCalibrated())
+                    if(!flag_info_txt)
+                    {
+                        info_txt.setVisibility(View.VISIBLE);
+                        info_txt.setText(mCalibrator.getCameraMatrix().dump()+"\n"+
+                                mCalibrator.getDistortionCoefficients().dump()+"\n"+Double.toString(mCalibrator.getAvgReprojectionError()));
+                        flag_info_txt = true;
+                    }
+                    else
+                    {
+                        info_txt.setVisibility(View.INVISIBLE);
+                        info_txt.setText("");
+                        flag_info_txt = false;
+                    }
             case R.id.calibration:
                 mOnCameraFrameRender =
                         new OnCameraFrameRender(new CalibrationFrameRender(mCalibrator));

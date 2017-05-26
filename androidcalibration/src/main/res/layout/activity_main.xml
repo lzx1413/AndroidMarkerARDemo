@@ -7,13 +7,25 @@
     android:layout_height="match_parent"
     tools:context="com.example.lzx1413.androidcalibration.MainActivity">
     <org.opencv.android.JavaCameraView
-        android:layout_width="395dp"
-        android:layout_height="587dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/camera_calibration_java_surface_view"
         opencv:show_fps="true"
         android:layout_weight="1"
         tools:layout_editor_absoluteY="8dp"
         tools:layout_editor_absoluteX="8dp" />
+    <TextView
+        android:id="@+id/info_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#AA000000"
+        android:text=""
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>
