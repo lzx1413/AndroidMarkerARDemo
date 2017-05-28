@@ -54,9 +54,9 @@ public:
 
 
         cv::line(img,per_points[0],per_points[4],cv::Scalar(0,0,255,255),5);
-        cv::line(img,per_points[1],per_points[5],cv::Scalar(0,0,255,255),5);
-        cv::line(img,per_points[2],per_points[6],cv::Scalar(0,0,255,255),5);
-        cv::line(img,per_points[3],per_points[7],cv::Scalar(0,0,255,255),5);
+        cv::line(img,per_points[1],per_points[5],cv::Scalar(0,0,0,255),5);
+        cv::line(img,per_points[2],per_points[6],cv::Scalar(0,255,0,255),5);
+        cv::line(img,per_points[3],per_points[7],cv::Scalar(255,0,0,255),5);
 
 
     }

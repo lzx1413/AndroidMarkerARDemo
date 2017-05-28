@@ -17,6 +17,30 @@
 static MarkerDetector marker_detector;
 static std::vector<Marker> detecedMarkers;
 static ARDisplay arDisplay;
+
+JNIEXPORT void JNICALL
+Java_com_example_lzx1413_androidcalibration_MainActivity_nativeInit(JNIEnv *env, jobject instance) {
+
+    // TODO
+
+}
+
+JNIEXPORT void JNICALL
+Java_com_example_lzx1413_androidcalibration_MainActivity_nativeResize(JNIEnv *env, jobject instance,
+                                                                      jint w, jint h) {
+
+    // TODO
+
+}
+
+JNIEXPORT void JNICALL
+Java_com_example_lzx1413_androidcalibration_MainActivity_nativeRender(JNIEnv *env,
+                                                                      jobject instance) {
+
+    // TODO
+
+}
+
 using namespace cv;
 using namespace std;
 
