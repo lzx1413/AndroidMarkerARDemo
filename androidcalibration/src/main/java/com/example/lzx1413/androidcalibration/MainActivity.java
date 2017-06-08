@@ -12,6 +12,7 @@ package com.example.lzx1413.androidcalibration;
 // When you've captured necessary amount of pattern corners (usually ~20 are enough),
 // press "Calibrate" button for performing camera calibration.
 
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -34,16 +35,23 @@ import android.view.View.OnTouchListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener {
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+public class MainActivity extends Activity implements CvCameraViewListener2, OnTouchListener, GLSurfaceView.Renderer {
     private static final String TAG = "OCVSample::Activity";
 
     private CameraBridgeViewBase mOpenCvCameraView;
     private CameraCalibrator mCalibrator;
     private OnCameraFrameRender mOnCameraFrameRender;
+    private GLSurfaceView glSurfaceView;
     private TextView info_txt;
     private boolean flag_info_txt = false;
     private int mWidth;
     private int mHeight;
+    private native void nativeInit();
+    private native void nativeResize(int w, int h);
+    private native void nativeRender();
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -80,6 +88,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mOpenCvCameraView.setCvCameraViewListener(this);
         info_txt = (TextView) findViewById(R.id.info_text);
         info_txt.setVisibility(View.INVISIBLE);
+        glSurfaceView = (GLSurfaceView) findViewById(R.id.gl_view);
+        glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        glSurfaceView.setRenderer(this);
+        glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
     @Override
@@ -240,5 +252,18 @@ public class MainActivity extends Activity implements CvCameraViewListener2, OnT
         mCalibrator.addCorners();
         return false;
     }
-}
+   @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    //nativeInit();
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+      //  nativeResize(width, height);
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl) {
+        //nativeRender();
+    }}
 

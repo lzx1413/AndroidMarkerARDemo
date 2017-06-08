@@ -14,6 +14,11 @@
         android:layout_weight="1"
         tools:layout_editor_absoluteY="8dp"
         tools:layout_editor_absoluteX="8dp" />
+    <android.opengl.GLSurfaceView
+        android:id="@+id/gl_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5" />
     <TextView
         android:id="@+id/info_text"
         android:layout_width="0dp"
