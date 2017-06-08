@@ -16,6 +16,8 @@ import org.opencv.core.Range;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 abstract class FrameRender {
@@ -102,8 +104,10 @@ class ARFramRender extends FrameRender{
     private int mWidth;
     private int mHeight;
     private Resources mResources;
+    private int surface_image[];
     public native boolean initMarkerDetector(long camMat,long distorCoef);
     public native void  findMarkers(long grayaddr,long rgbaaddr);
+    private native boolean addSurfaceImage(int w, int h, int[] pixls);
     public ARFramRender (CameraCalibrator calibrator,int width, int height,Resources resources)
     {
         mCalibrator = calibrator;
@@ -116,8 +120,12 @@ class ARFramRender extends FrameRender{
         {
             Log.e(TAG,"init marker detector failed");
         }
-
-
+        final Bitmap surfaceBitmap = BitmapFactory.decodeResource(resources,R.drawable.test);
+        int w = surfaceBitmap.getWidth();
+        int h = surfaceBitmap.getHeight();
+        surface_image = new int[w*h];
+        surfaceBitmap.getPixels(surface_image,0,w,0,0,w,h);
+        addSurfaceImage(w,h,surface_image);
     }
     @Override
     public Mat render(CvCameraViewFrame inputFrame){
