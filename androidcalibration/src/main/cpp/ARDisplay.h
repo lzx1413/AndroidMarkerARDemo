@@ -67,27 +67,47 @@ public:
         cv::gemm(outterMatrix,rec3dMat,1,0,0,tmp);
         cv::gemm(cameraMatrix,tmp,1,0,0,rec2dMat);
         std::vector<cv::Point2f> per_points;
+        bool out_range_flag = false;
         for(int i = 0;i<rec2dMat.cols;++i)
         {
             auto point = rec2dMat.col(i);
             cv::Point per_point;
             per_point.x =point.at<float>(0,0)/point.at<float>(2,0);
             per_point.y =point.at<float>(1,0)/point.at<float>(2,0);
+            if(per_point.x < 0 || per_point.y <0)
+            {
+                out_range_flag = true;
+                break;
+            }
             per_points.push_back(per_point);
             circle(img,per_point, 10, cv::Scalar(0, 255, 0, 255),-1);
         }
-        //img(cv::Rect(0,0,127,127)) = surface_images.at(0).clone();
-        cv::Mat M = cv::getPerspectiveTransform(image_corners2d.at(image_index), per_points);
-        cv::Mat per_image;
-        cv::warpPerspective(surface_images.at(image_index), per_image,  M, img.size());
-        cv::Mat mask;
-        cv::inRange(per_image,cv::Scalar(0,0,0,255),cv::Scalar(255,255,255,255),mask);
-        per_image.copyTo(img,mask);
+        //TODO:: handle the situation while the object is out of the image range
+        if(!out_range_flag) {
+            auto maxmincoords = FindMinMaxCoords(per_points);
+            int mask_width = maxmincoords[1] - maxmincoords[0] + 1;
+            int mask_height = maxmincoords[3] - maxmincoords[2] + 1;
+            std::vector<cv::Point2f> scaled_points;
+            for (auto point : per_points) {
+                scaled_points.push_back(
+                        cv::Point2f(point.x - maxmincoords[0], point.y - maxmincoords[2]));
+            }
+            //img(cv::Rect(0,0,127,127)) = surface_images.at(0).clone();
+            cv::Mat M = cv::getPerspectiveTransform(image_corners2d.at(image_index), scaled_points);
+            cv::Mat per_image;
+            cv::warpPerspective(surface_images.at(image_index), per_image, M,
+                                cv::Size(mask_width, mask_height));
+            cv::Mat mask;
+            cv::inRange(per_image, cv::Scalar(0, 0, 0, 255), cv::Scalar(255, 255, 255, 255), mask);
+            auto tmp_path = img(cv::Rect(cv::Point(maxmincoords[0], maxmincoords[2]),
+                                         cv::Point(maxmincoords[1] + 1, maxmincoords[3] + 1)));
+            per_image.copyTo(tmp_path, mask);
 #ifdef DEBUG
-        cv::imwrite("/sdcard/mask.png",mask);
-        cv::imwrite("/sdcard/surfaceimage.png",per_image);
-        cv::imwrite("/sdcard/merge.png",img);
+            cv::imwrite("/sdcard/mask.png", mask);
+            cv::imwrite("/sdcard/surfaceimage.png", per_image);
+            cv::imwrite("/sdcard/merge.png", img);
 #endif
+        }
     }
     void AppendSurfaceImages(cv::Mat& img)
     {
@@ -106,6 +126,22 @@ private:
     cv::Mat rec3dMat;
     std::vector<cv::Mat> surface_images;
     std::vector<std::vector<cv::Point2f>> image_corners2d;
+    inline std::vector<int>  FindMinMaxCoords(std::vector<cv::Point2f> coords)
+    {
+        std::vector<int> maxmincoord{999,0,999,0};//x_min x_max y_min y_max
+        for (auto point : coords) {
+            if (point.x < maxmincoord[0])
+                maxmincoord[0] = point.x;
+            if (point.x > maxmincoord[1])
+                maxmincoord[1] = point.x;
+            if (point.y < maxmincoord[2])
+                maxmincoord[2] = point.y;
+            if (point.y > maxmincoord[3])
+                maxmincoord[3] = point.y;
+        }
+        return maxmincoord;
+
+    }
     void Mat2PointVec(const cv::Mat& mat,std::vector<cv::Point>& points)
     {
 
