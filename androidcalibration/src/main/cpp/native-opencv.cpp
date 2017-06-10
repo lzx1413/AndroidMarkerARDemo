@@ -84,10 +84,14 @@ Java_com_example_lzx1413_androidcalibration_ARFramRender_findMarkers(JNIEnv *env
                 circle(rgbaImg, point, 10, Scalar(255, 0, 0, 255));
 
             }
+            LOGE("marker is %d",marker.id);
             cv::Mat outterMatrix = marker.transformation.getMat34();
             cv::Mat camMatrix = marker_detector.get_camMatrix();
             arDisplay.PlotCube(rgbaImg, outterMatrix, camMatrix);
-            arDisplay.MapImage(rgbaImg,outterMatrix,camMatrix);
+            if(marker.id == 213)
+                arDisplay.MapImage(rgbaImg,outterMatrix,camMatrix,0);
+            if(marker.id == 198)
+                arDisplay.MapImage(rgbaImg,outterMatrix,camMatrix,1);
         }
     }
 }

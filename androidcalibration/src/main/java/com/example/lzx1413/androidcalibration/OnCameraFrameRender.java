@@ -120,11 +120,17 @@ class ARFramRender extends FrameRender{
         {
             Log.e(TAG,"init marker detector failed");
         }
-        final Bitmap surfaceBitmap = BitmapFactory.decodeResource(resources,R.drawable.test);
+        final Bitmap surfaceBitmap = BitmapFactory.decodeResource(resources,R.drawable.test1);
         int w = surfaceBitmap.getWidth();
         int h = surfaceBitmap.getHeight();
         surface_image = new int[w*h];
         surfaceBitmap.getPixels(surface_image,0,w,0,0,w,h);
+        addSurfaceImage(w,h,surface_image);
+        final Bitmap surfaceBitmap2 = BitmapFactory.decodeResource(resources,R.drawable.test2);
+        w = surfaceBitmap2.getWidth();
+        h = surfaceBitmap2.getHeight();
+        surface_image = new int[w*h];
+        surfaceBitmap2.getPixels(surface_image,0,w,0,0,w,h);
         addSurfaceImage(w,h,surface_image);
     }
     @Override
