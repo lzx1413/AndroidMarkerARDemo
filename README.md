@@ -5,7 +5,7 @@ This is a simple Android AR Demo based on OpenCV, this project is based on OpenC
 ## Usage
 
 this app can be built with Android Studio 2.3 with NDK support directly.
-images for calibration and mark are in [images](https://github.com/lzx1413/AndroidMarkerARDemo/tree/master/images).
+images for calibration and marker are in [images](https://github.com/lzx1413/AndroidMarkerARDemo/tree/master/images).
 
 You should calibrate the mobile camera with this app first and print the marker in the book to show the AR functions. There is a video to show the process.
 
